@@ -1,6 +1,7 @@
 """
 RAG Pipeline Package
 """
+
 from .pipeline import RAGPipeline
 from .embedding_service import EmbeddingService
 from .vector_store import VectorStore
@@ -14,5 +15,5 @@ __all__ = [
     "VectorStore",
     "Retriever",
     "Generator",
-    "DataLoader"
+    "DataLoader",
 ]

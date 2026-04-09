@@ -1,6 +1,7 @@
 """
 Główny interfejs aplikacji Streamlit
 """
+
 import streamlit as st
 import sys
 import os
@@ -28,9 +29,9 @@ def display_header():
         page_title="RAG Pipeline",
         page_icon="🤖",
         layout="wide",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="expanded",
     )
-    
+
     st.title("🤖 RAG Pipeline - Zaawansowane Wyszukiwanie i Generowanie")
     st.markdown("""
     Aplikacja implementująca **Retrieval-Augmented Generation** - system łączący wyszukiwanie dokumentów
@@ -42,23 +43,23 @@ def display_sidebar():
     """Wyświetla panel boczny"""
     with st.sidebar:
         st.header("⚙️ Ustawienia")
-        
+
         # Liczba dokumentów do wyszukania
         top_k = st.slider(
             "Liczba dokumentów do wyszukania",
             min_value=1,
             max_value=10,
             value=5,
-            step=1
+            step=1,
         )
-        
+
         # Rozmiar magazynu
         st.divider()
         st.subheader("📊 Statystyki")
         pipeline = st.session_state.pipeline
         store_size = pipeline.get_vector_store_size()
         st.metric("Liczba dokumentów", store_size)
-        
+
         # Historia pytań
         st.divider()
         st.subheader("📜 Historia")
@@ -68,7 +69,7 @@ def display_sidebar():
                     st.write(query)
         else:
             st.info("Brak historii pytań")
-        
+
         return top_k
 
 
@@ -76,41 +77,41 @@ def display_main_interface(top_k: int):
     """Wyświetla główny interfejs"""
     # Sekcja wejścia
     st.header("❓ Zadaj pytanie")
-    
+
     col1, col2 = st.columns([4, 1])
     with col1:
         question = st.text_input(
             "Wpisz swoje pytanie:",
             placeholder="Np. Co to jest sztuczna inteligencja?",
-            label_visibility="collapsed"
+            label_visibility="collapsed",
         )
-    
+
     with col2:
         search_button = st.button("🔍 Szukaj", use_container_width=True)
-    
+
     # Przetwarzanie pytania
     if search_button and question:
         st.session_state.query_history.append(question)
-        
+
         with st.spinner("Wyszukuję dokumenty i generuję odpowiedź..."):
             result = st.session_state.pipeline.query(question, top_k=top_k)
-        
+
         display_results(result)
-    
+
     # Przykładowe pytania
     st.divider()
     st.subheader("💡 Przykładowe pytania:")
-    
+
     example_questions = [
         "Co to jest sztuczna inteligencja?",
         "Jakie są zastosowania machine learning?",
         "Opowiedz mi o Renesansie",
-        "Czym zajmuje się biologia?"
+        "Czym zajmuje się biologia?",
     ]
-    
+
     col1, col2, col3, col4 = st.columns(4)
     columns = [col1, col2, col3, col4]
-    
+
     for idx, example in enumerate(example_questions):
         with columns[idx % 4]:
             if st.button(example, key=f"example_{idx}", use_container_width=True):
@@ -124,20 +125,20 @@ def display_results(result: dict):
     """Wyświetla wyniki wyszukiwania i generowania"""
     # Wyświetl odpowiedź
     st.success("✅ Odpowiedź wygenerowana!")
-    
+
     with st.expander("📝 Pełna odpowiedź", expanded=True):
         st.write(result["answer"])
-    
+
     # Wyświetl źródła
     st.subheader(f"📚 Znalezione źródła ({result['num_sources']})")
-    
+
     for i, source in enumerate(result["sources"], 1):
         with st.expander(
             f"Źródło {i} - {source['metadata'].get('topic', 'Nieznany temat')} "
             f"(Score: {source['score']:.4f})"
         ):
             st.write(source["content"])
-            
+
             # Metadane
             col1, col2 = st.columns(2)
             with col1:
@@ -150,9 +151,9 @@ def display_about_section():
     """Wyświetla sekcję 'O projekcie'"""
     st.divider()
     st.header("ℹ️ O projekcie")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.subheader("🏗️ Komponenty")
         st.write("""
@@ -161,7 +162,7 @@ def display_about_section():
         - **Retriever**: Wyszukiwanie podobnych dokumentów
         - **Generator**: Generowanie odpowiedzi
         """)
-    
+
     with col2:
         st.subheader("📊 Technologie")
         st.write("""
